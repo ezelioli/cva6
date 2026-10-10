@@ -82,6 +82,7 @@ make verilator-build CVA6_CONFIG=cv64a6_imafdc_sv39_hpdcache_wb
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `CVA6_CONFIG` | `cv64a6_imafdch_sv39_hpdcache_wb` | CVA6 configuration target passed to Bender; a 64-bit one with an AXI memory subsystem |
+| `CVA6_CONFIG_PKG` | empty | A configuration package to build instead of `CVA6_CONFIG`'s own, such as a variant with other parameters, without editing `config/target` |
 | `HEXFILE` | `sw/out/hello.hex` | Verilog hex image to preload |
 | `MAX_CYCLES` | `10000` | Simulation timeout in core cycles |
 | `MEM_DELAY` | `10` | Main memory delay per AXI channel, 0 to 100, passed as `+MemDelay` |

@@ -113,10 +113,12 @@ as without CLIC.
 | `cv64a6_imafdchxhclic_sv39_hpdcache_wb` | HPDcache, write-back | as above, with the virtual CLIC |
 | `cv64a6_imafdc_sv39_hpdcache_wb` | HPDcache, write-back | B, Zkn, Zicbom, superscalar issue |
 | `cv64a6_splus` | HPDcache, write-back | as above; CV-X-IF off |
+| `cv64a6_splusplus` | HPDcache, write-back | as `cv64a6_splus` |
 
 Configurations no probe can tell apart share one description through links to its
 `config.yaml` and `sail.json`, so that they get byte-identical tests: `cv64a6_splus` uses
-`cv64a6_imafdc_sv39_hpdcache_wb`'s, which differs from it only in CV-X-IF.
+`cv64a6_imafdc_sv39_hpdcache_wb`'s, which differs from it only in CV-X-IF, and so does
+`cv64a6_splusplus`, which differs from `cv64a6_splus` only in pipeline and predictor sizes.
 `cv64a6_imafdchxhclic_sv39_hpdcache_wb` uses `cv64a6_imafdchsclic_sv39_hpdcache_wb`'s: the virtual
 CLIC is not visible in any standard CSR.
 

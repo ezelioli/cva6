@@ -346,8 +346,7 @@ The model under `verilator/build` is replaced on every rebuild; copy `Vtest` tog
 ## Checking for performance changes
 
 Each configuration CI checks has its expected results under [expected/](expected/):
-`cv64a6_imafdch_sv39_wb`, `cv64a6_imafdchsclic_sv39_wb`, `cv64a6_imafdchsclic_sv39_hpdcache_wb`,
-`cv64a6_imafdchxhclic_sv39_wb`, `cv64a6_imafdchxhclic_sv39_hpdcache_wb` and `cv64a6_splus`. They
+`cv64a6_imafdch_sv39_hpdcache_wb` and `cv64a6_splus`. They
 hold every benchmark's cycles and instructions, as one run measured them, with the compiler, the
 source revisions and the RTL commit of that run. `check` runs the benchmarks of a model's expected
 results and reports each one's cycles against them, then the geometric mean of the change per
@@ -362,8 +361,8 @@ make bench-check                                       # or: ./util/run-bench.py
 The expected results are those of the set CI checks, which `make -C sw bench-ci` builds into
 `sw/out/bench-ci/`: the benchmarks of `make -C sw bench`, but RaiderSTREAM without `rs-sg` and on
 arrays of 16384 doubles instead of 32768 (`BENCH_CI_VARS` in [bench.mk](bench.mk)). Without
-these, RaiderSTREAM would take most of a check's time, `rs-sg` alone over 20 minutes on the
-standard write-back cache; with them, each array is still four times the data cache.
+these, RaiderSTREAM would take most of a check's time; with them, each array is still four times
+the data cache.
 `make -C sw bench` stays the set to report numbers from.
 
 For example, a `cv64a6_splus` model with `NrLoadPipeRegs` = 0, checked on the quick set:
@@ -407,8 +406,7 @@ conflict in the file; after rebasing, the second updates it again.
 | `BENCH_CHECK_STRICT` | `1` | `0` reports changed cycles instead of failing |
 | `BENCH_CHECK_JOBS` | all cores | simulations at once |
 
-With 4 jobs, the full set takes about 20 minutes on `cv64a6_splus` and the HPDcache configurations,
-and about 30 on those with the standard write-back cache. The cycles do not depend on the Verilator
+With 4 jobs, the full set takes about 20 minutes. The cycles do not depend on the Verilator
 version: the expected results check the same under 5.042 and 5.046.
 In CI it runs alongside the architectural tests, which take about an hour:
 

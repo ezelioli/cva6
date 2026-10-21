@@ -732,6 +732,11 @@ module cva6_rvfi
     `CONNECT_RVFI_SAME(CVA6Cfg.RVH, vscause)
     `CONNECT_RVFI_SAME(CVA6Cfg.RVH, vstval)
     `CONNECT_RVFI_SAME(CVA6Cfg.RVH, vsatp)
+    `CONNECT_RVFI_SAME(CVA6Cfg.RVSCLIC, mtvt)
+    `CONNECT_RVFI_SAME(CVA6Cfg.RVSCLIC, mintstatus)
+    `CONNECT_RVFI_SAME(CVA6Cfg.RVSCLIC, mintthresh)
+    `CONNECT_RVFI_SAME(CVA6Cfg.RVS && CVA6Cfg.RVSCLIC, stvt)
+    `CONNECT_RVFI_SAME(CVA6Cfg.RVS && CVA6Cfg.RVSCLIC, sintthresh)
   end
   // verilog_format: on
 endmodule

@@ -213,6 +213,8 @@ module cva6tb_soc
     .clic_irq_id_i    ( clic_irq_id                       ),
     .clic_irq_level_i ( clic_irq_level                    ),
     .clic_irq_priv_i  ( riscv::priv_lvl_t'(clic_irq_priv) ),
+    .clic_irq_v_i     ( 1'b0                            ),
+    .clic_irq_vsid_i  ( '0                              ),
     .clic_irq_shv_i   ( clic_irq_shv                      ),
     .clic_irq_ready_o ( clic_irq_ready                    ),
     .clic_kill_req_i  ( clic_irq_kill_req                 ),

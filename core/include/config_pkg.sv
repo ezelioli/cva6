@@ -85,6 +85,8 @@ package config_pkg;
     bit                          RVZCMT;
     // CLIC extension
     bit                          RVSCLIC;
+    // CLIC virtualization extension (vCLIC)
+    bit                          RVXHCLIC;
     // Zicond RISC-V extension
     bit                          RVZiCond;
     // Zicbom RISC-V extension (cache management / CBO)
@@ -337,6 +339,7 @@ package config_pkg;
     bit          RVZCMP;
     bit          RVZCMT;
     bit          RVSCLIC;
+    bit          RVXHCLIC;
     bit          XFVec;
     bit          CvxifEn;
     copro_type_t CoproType;

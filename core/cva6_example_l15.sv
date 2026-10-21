@@ -96,6 +96,8 @@ module cva6_example_l15
       .clic_irq_id_i('0),
       .clic_irq_level_i('0),
       .clic_irq_priv_i(riscv::PRIV_LVL_M),
+      .clic_irq_v_i(1'b0),
+      .clic_irq_vsid_i('0),
       .clic_irq_shv_i(1'b0),
       .clic_irq_ready_o(),
       .clic_kill_req_i(1'b0),

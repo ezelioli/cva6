@@ -186,6 +186,10 @@ sources:
         files:
           - config/target/cv64a6_imafdchsclic_sv39_hpdcache_wb/rtl_cfg_pkg.sv
 
+      - target: cv64a6_imafdchxhclic_sv39_hpdcache_wb
+        files:
+          - config/target/cv64a6_imafdchxhclic_sv39_hpdcache_wb/rtl_cfg_pkg.sv
+
       - target: cv64a6_splus
         files:
           - config/target/cv64a6_splus/rtl_cfg_pkg.sv

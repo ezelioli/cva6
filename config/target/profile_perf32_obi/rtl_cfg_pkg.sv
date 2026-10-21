@@ -45,6 +45,7 @@ package cva6_config_pkg;
       RVH: bit'(0),
       RVZCMT: bit'(0),
       RVSCLIC: bit'(0),
+      RVXHCLIC: bit'(0),
       RVZCB: bit'(0),
       RVZCMP: bit'(0),
       XFVec: bit'(0),

@@ -181,6 +181,10 @@ sources:
         files:
           - config/target/cv64a6_imafdch_sv39_hpdcache_wb/rtl_cfg_pkg.sv
 
+      - target: cv64a6_imafdchsclic_sv39_hpdcache_wb
+        files:
+          - config/target/cv64a6_imafdchsclic_sv39_hpdcache_wb/rtl_cfg_pkg.sv
+
       - target: cv64a6_splus
         files:
           - config/target/cv64a6_splus/rtl_cfg_pkg.sv
@@ -221,6 +225,7 @@ sources:
       - core/cva6_top.sv
       - core/cva6.sv
       - core/cva6_pipeline.sv
+      - core/cva6_clic_controller.sv
       - core/aes.sv
       - core/alu.sv
       - core/alu_wrapper.sv

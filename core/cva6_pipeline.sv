@@ -81,6 +81,22 @@ module cva6_pipeline
     input logic time_irq_i,
     // Debug (async) request - SUBSYSTEM
     input logic debug_req_i,
+    // CLIC interrupt request - CLIC
+    input logic clic_irq_valid_i,
+    // CLIC interrupt source ID - CLIC
+    input logic [$clog2(CVA6Cfg.CLICNumInterruptSrc)-1:0] clic_irq_id_i,
+    // CLIC interrupt level, 8 bits by the CLIC specification - CLIC
+    input logic [7:0] clic_irq_level_i,
+    // CLIC interrupt privilege level - CLIC
+    input riscv::priv_lvl_t clic_irq_priv_i,
+    // CLIC selective hardware vectoring - CLIC
+    input logic clic_irq_shv_i,
+    // Interrupt taken, the core side of the CLIC handshake - CLIC
+    output logic clic_irq_ready_o,
+    // CLIC kill request - CLIC
+    input logic clic_kill_req_i,
+    // CLIC kill acknowledge - CLIC
+    output logic clic_kill_ack_o,
     // Probes to build RVFI, can be left open when not used - RVFI
     output rvfi_probes_t rvfi_probes_o,
     // Probes for performance analysis, can be left open when not used - PERF
@@ -496,6 +512,13 @@ module cva6_pipeline
   riscv::cbie_t mcbie, scbie, hcbie;
   logic mcbcfe, scbcfe, hcbcfe;
   irq_ctrl_t irq_ctrl_csr_id;
+  logic clic_mode;
+  riscv::intstatus_rv_t mintstatus_csr;
+  logic [7:0] mintthresh_csr;
+  logic [7:0] sintthresh_csr;
+  // CLIC controller <-> ID
+  logic clic_irq_req_id;
+  logic [CVA6Cfg.XLEN-1:0] clic_irq_cause_id;
   logic dcache_en_csr_nbdcache;
   logic csr_write_fflags_commit_cs;
   logic icache_en_csr;
@@ -669,6 +692,9 @@ CVA6Cfg.NrCommitPorts
       .frm_i               (frm_csr_id_issue_ex),
       .irq_i               (irq_i),
       .irq_ctrl_i          (irq_ctrl_csr_id),
+      .clic_mode_i         (clic_mode),
+      .clic_irq_req_i      (clic_irq_req_id),
+      .clic_irq_cause_i    (clic_irq_cause_id),
       .debug_mode_i        (debug_mode),
       .tvm_i               (tvm_csr_id),
       .tw_i                (tw_csr_id),
@@ -1196,6 +1222,13 @@ CVA6Cfg.NrCommitPorts
       .tsr_o                              (tsr_csr_id),
       .hu_o                               (hu),
       .debug_mode_o                       (debug_mode),
+      .clic_mode_o                        (clic_mode),
+      .mintstatus_o                       (mintstatus_csr),
+      .mintthresh_o                       (mintthresh_csr),
+      .sintthresh_o                       (sintthresh_csr),
+      .clic_irq_req_i                     (clic_irq_valid_i),
+      .clic_irq_shv_i                     (clic_irq_shv_i),
+      .clic_irq_ready_o                   (clic_irq_ready_o),
       .single_step_o                      (single_step_csr_commit),
       .icache_en_o                        (icache_enable_o),
       .dcache_en_o                        (dcache_enable_o),
@@ -1342,6 +1375,40 @@ CVA6Cfg.NrCommitPorts
       .hfence_gvma_i         (hfence_gvma_commit_controller),
       .flush_commit_i        (flush_commit)
   );
+
+  // -------------------
+  // CLIC Controller
+  // -------------------
+  if (CVA6Cfg.RVSCLIC) begin : gen_clic_controller
+    cva6_clic_controller #(
+        .CVA6Cfg(CVA6Cfg),
+        .irq_ctrl_t(irq_ctrl_t)
+    ) i_clic_controller (
+        .clk_i           (clk_i),
+        .rst_ni          (rst_ni),
+        // from CSR file
+        .priv_lvl_i      (priv_lvl),
+        .irq_ctrl_i      (irq_ctrl_csr_id),
+        .mintthresh_i    (mintthresh_csr),
+        .sintthresh_i    (sintthresh_csr),
+        .mintstatus_i    (mintstatus_csr),
+        // from/to CLIC
+        .clic_irq_valid_i(clic_irq_valid_i),
+        .clic_irq_ready_i(clic_irq_ready_o),
+        .clic_irq_id_i   (clic_irq_id_i),
+        .clic_irq_level_i(clic_irq_level_i),
+        .clic_irq_priv_i (clic_irq_priv_i),
+        .clic_kill_req_i (clic_kill_req_i),
+        .clic_kill_ack_o (clic_kill_ack_o),
+        // to ID stage
+        .clic_irq_req_o  (clic_irq_req_id),
+        .clic_irq_cause_o(clic_irq_cause_id)
+    );
+  end else begin : gen_dummy_clic_controller
+    assign clic_kill_ack_o   = 1'b0;
+    assign clic_irq_req_id   = 1'b0;
+    assign clic_irq_cause_id = '0;
+  end
 
   // -------------------
   // Instruction Tracer

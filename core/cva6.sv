@@ -73,6 +73,22 @@ module cva6
     input logic time_irq_i,
     // Debug (async) request - SUBSYSTEM
     input logic debug_req_i,
+    // CLIC interrupt request - CLIC
+    input logic clic_irq_valid_i,
+    // CLIC interrupt source ID - CLIC
+    input logic [$clog2(CVA6Cfg.CLICNumInterruptSrc)-1:0] clic_irq_id_i,
+    // CLIC interrupt level, 8 bits by the CLIC specification - CLIC
+    input logic [7:0] clic_irq_level_i,
+    // CLIC interrupt privilege level - CLIC
+    input riscv::priv_lvl_t clic_irq_priv_i,
+    // CLIC selective hardware vectoring - CLIC
+    input logic clic_irq_shv_i,
+    // Interrupt taken, the core side of the CLIC handshake - CLIC
+    output logic clic_irq_ready_o,
+    // CLIC kill request - CLIC
+    input logic clic_kill_req_i,
+    // CLIC kill acknowledge - CLIC
+    output logic clic_kill_ack_o,
     // Probes to build RVFI, can be left open when not used - RVFI
     output rvfi_probes_t rvfi_probes_o,
     // Probes for performance analysis, can be left open when not used - PERF
@@ -264,6 +280,14 @@ module cva6
       .ipi_i(ipi_i),
       .time_irq_i(time_irq_i),
       .debug_req_i(debug_req_i),
+      .clic_irq_valid_i(clic_irq_valid_i),
+      .clic_irq_id_i(clic_irq_id_i),
+      .clic_irq_level_i(clic_irq_level_i),
+      .clic_irq_priv_i(clic_irq_priv_i),
+      .clic_irq_shv_i(clic_irq_shv_i),
+      .clic_irq_ready_o(clic_irq_ready_o),
+      .clic_kill_req_i(clic_kill_req_i),
+      .clic_kill_ack_o(clic_kill_ack_o),
       .rvfi_probes_o(rvfi_probes_o),
       .perf_probes_o(perf_probes_o),
       .cvxif_req_o(cvxif_req_o),

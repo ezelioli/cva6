@@ -89,6 +89,10 @@ module cva6_pipeline
     input logic [7:0] clic_irq_level_i,
     // CLIC interrupt privilege level - CLIC
     input riscv::priv_lvl_t clic_irq_priv_i,
+    // CLIC interrupt virtualization bit, for the vCLIC - CLIC
+    input logic clic_irq_v_i,
+    // CLIC interrupt virtual supervisor ID, for the vCLIC - CLIC
+    input logic [5:0] clic_irq_vsid_i,
     // CLIC selective hardware vectoring - CLIC
     input logic clic_irq_shv_i,
     // Interrupt taken, the core side of the CLIC handshake - CLIC
@@ -286,6 +290,8 @@ module cva6_pipeline
     logic [CVA6Cfg.XLEN-1:0] mip;
     logic [CVA6Cfg.XLEN-1:0] mideleg;
     logic [CVA6Cfg.XLEN-1:0] hideleg;
+    logic [CVA6Cfg.XLEN-1:0] hgeie;
+    logic [5:0]              vgein;
     logic                    sie;
     logic                    global_enable;
   };
@@ -516,6 +522,7 @@ module cva6_pipeline
   riscv::intstatus_rv_t mintstatus_csr;
   logic [7:0] mintthresh_csr;
   logic [7:0] sintthresh_csr;
+  logic [7:0] vsintthresh_csr;
   // CLIC controller <-> ID
   logic clic_irq_req_id;
   logic [CVA6Cfg.XLEN-1:0] clic_irq_cause_id;
@@ -1226,6 +1233,7 @@ CVA6Cfg.NrCommitPorts
       .mintstatus_o                       (mintstatus_csr),
       .mintthresh_o                       (mintthresh_csr),
       .sintthresh_o                       (sintthresh_csr),
+      .vsintthresh_o                      (vsintthresh_csr),
       .clic_irq_req_i                     (clic_irq_valid_i),
       .clic_irq_shv_i                     (clic_irq_shv_i),
       .clic_irq_ready_o                   (clic_irq_ready_o),
@@ -1388,9 +1396,11 @@ CVA6Cfg.NrCommitPorts
         .rst_ni          (rst_ni),
         // from CSR file
         .priv_lvl_i      (priv_lvl),
+        .v_i             (v),
         .irq_ctrl_i      (irq_ctrl_csr_id),
         .mintthresh_i    (mintthresh_csr),
         .sintthresh_i    (sintthresh_csr),
+        .vsintthresh_i   (vsintthresh_csr),
         .mintstatus_i    (mintstatus_csr),
         // from/to CLIC
         .clic_irq_valid_i(clic_irq_valid_i),
@@ -1398,6 +1408,8 @@ CVA6Cfg.NrCommitPorts
         .clic_irq_id_i   (clic_irq_id_i),
         .clic_irq_level_i(clic_irq_level_i),
         .clic_irq_priv_i (clic_irq_priv_i),
+        .clic_irq_v_i    (clic_irq_v_i),
+        .clic_irq_vsid_i (clic_irq_vsid_i),
         .clic_kill_req_i (clic_kill_req_i),
         .clic_kill_ack_o (clic_kill_ack_o),
         // to ID stage
@@ -1627,5 +1639,12 @@ CVA6Cfg.NrCommitPorts
       .rvfi_probes_o(rvfi_probes_o)
 
   );
+
+  //pragma translate_off
+  initial begin
+    assert (!(CVA6Cfg.RVXHCLIC && (!CVA6Cfg.RVH || !CVA6Cfg.RVSCLIC)))
+    else $fatal(1, "The vCLIC (RVXHCLIC) needs the H extension and the CLIC (RVSCLIC)");
+  end
+  //pragma translate_on
 
 endmodule  // ariane

@@ -138,7 +138,7 @@ params:
 
   # Trap vectors. Direct and vectored are implemented, and so is the CLIC mode,
   # mtvec[1:0] = 3, which UDB cannot express: Sm_mcsr_access and Sm_mcsr_walk
-  # would read the reserved-mode bit back set (see waivers.txt).
+  # read the reserved-mode bit back set and are waived (see waivers.txt).
   MTVEC_ACCESS: rw
   MTVEC_MODES: [0, 1]
   MTVEC_BASE_ALIGNMENT_DIRECT: 0x4
@@ -232,9 +232,8 @@ params:
   TINST_VALUE_ON_VIRTUAL_INSTRUCTION: always zero
   MUTABLE_MISA_H: false
   CONFIG_PTR_ADDRESS: 0x0
-  # No guest external interrupts: hgeie and hgeip read as zero, and so do
-  # mideleg.SGEI and mie.SGEIE.
-  NUM_EXTERNAL_GUEST_INTERRUPTS: 0
+  # hgeie is XLEN-1 bits with bit 0 hardwired to zero (csr_regfile.sv:796).
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 63
 
   # CVA6 implements Sv39 and its two-stage counterpart, and nothing wider.
   SV39_VSMODE_TRANSLATION: true

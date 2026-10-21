@@ -117,9 +117,8 @@ Configurations no probe can tell apart share one description through links to it
 `config.yaml` and `sail.json`, so that they get byte-identical tests: `cv64a6_splus` uses
 `cv64a6_imafdc_sv39_hpdcache_wb`'s, which differs from it only in CV-X-IF.
 
-The CLIC configuration implements the CLIC `mtvec` mode, which UDB cannot express, so the tests
-that check `mtvec`'s reserved mode bit would fail on it; they stop earlier, at `mie.SGEIE`, and are
-waived for both reasons.
+The CLIC configuration implements the CLIC `mtvec` mode, which UDB cannot express, so the two
+tests that check `mtvec`'s reserved mode bit are waived for it.
 
 ## Waivers
 

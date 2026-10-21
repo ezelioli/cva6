@@ -51,6 +51,8 @@ module cva6_top
       logic [$clog2(CVA6Cfg.CLICNumInterruptSrc)-1:0] id;
       logic [7:0] level;
       riscv::priv_lvl_t priv;
+      logic v;
+      logic [5:0] vsid;
       logic shv;
       logic kill_req;
     },
@@ -120,6 +122,10 @@ module cva6_top
     input logic [7:0] clic_irq_level_i,
     // CLIC interrupt privilege level - CLIC
     input riscv::priv_lvl_t clic_irq_priv_i,
+    // CLIC interrupt virtualization bit, for the vCLIC - CLIC
+    input logic clic_irq_v_i,
+    // CLIC interrupt virtual supervisor ID, for the vCLIC - CLIC
+    input logic [5:0] clic_irq_vsid_i,
     // CLIC selective hardware vectoring - CLIC
     input logic clic_irq_shv_i,
     // Interrupt taken, the core side of the CLIC handshake - CLIC
@@ -160,6 +166,8 @@ module cva6_top
                 clic_irq_id_i,
                 clic_irq_level_i,
                 clic_irq_priv_i,
+                clic_irq_v_i,
+                clic_irq_vsid_i,
                 clic_irq_shv_i,
                 clic_kill_req_i
             }
@@ -234,6 +242,8 @@ module cva6_top
         .clic_irq_id_i(clic_irq_id_i),
         .clic_irq_level_i(clic_irq_level_i),
         .clic_irq_priv_i(clic_irq_priv_i),
+        .clic_irq_v_i(clic_irq_v_i),
+        .clic_irq_vsid_i(clic_irq_vsid_i),
         .clic_irq_shv_i(clic_irq_shv_i),
         .clic_irq_ready_o(clic_irq_ready_o),
         .clic_kill_req_i(clic_kill_req_i),
@@ -270,6 +280,8 @@ module cva6_top
         .clic_irq_id_i(main_inputs_delayed.clic.id),
         .clic_irq_level_i(main_inputs_delayed.clic.level),
         .clic_irq_priv_i(main_inputs_delayed.clic.priv),
+        .clic_irq_v_i(main_inputs_delayed.clic.v),
+        .clic_irq_vsid_i(main_inputs_delayed.clic.vsid),
         .clic_irq_shv_i(main_inputs_delayed.clic.shv),
         .clic_irq_ready_o(shadow_outputs.clic_irq_ready),
         .clic_kill_req_i(main_inputs_delayed.clic.kill_req),
@@ -303,6 +315,8 @@ module cva6_top
         .clic_irq_id_i(clic_irq_id_i),
         .clic_irq_level_i(clic_irq_level_i),
         .clic_irq_priv_i(clic_irq_priv_i),
+        .clic_irq_v_i(clic_irq_v_i),
+        .clic_irq_vsid_i(clic_irq_vsid_i),
         .clic_irq_shv_i(clic_irq_shv_i),
         .clic_irq_ready_o(clic_irq_ready_o),
         .clic_kill_req_i(clic_kill_req_i),

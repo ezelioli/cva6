@@ -81,6 +81,10 @@ module cva6
     input logic [7:0] clic_irq_level_i,
     // CLIC interrupt privilege level - CLIC
     input riscv::priv_lvl_t clic_irq_priv_i,
+    // CLIC interrupt virtualization bit, for the vCLIC - CLIC
+    input logic clic_irq_v_i,
+    // CLIC interrupt virtual supervisor ID, for the vCLIC - CLIC
+    input logic [5:0] clic_irq_vsid_i,
     // CLIC selective hardware vectoring - CLIC
     input logic clic_irq_shv_i,
     // Interrupt taken, the core side of the CLIC handshake - CLIC
@@ -284,6 +288,8 @@ module cva6
       .clic_irq_id_i(clic_irq_id_i),
       .clic_irq_level_i(clic_irq_level_i),
       .clic_irq_priv_i(clic_irq_priv_i),
+      .clic_irq_v_i(clic_irq_v_i),
+      .clic_irq_vsid_i(clic_irq_vsid_i),
       .clic_irq_shv_i(clic_irq_shv_i),
       .clic_irq_ready_o(clic_irq_ready_o),
       .clic_kill_req_i(clic_kill_req_i),

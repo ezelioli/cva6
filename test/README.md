@@ -19,7 +19,7 @@ those who have access to it.
 | &nbsp;&nbsp;&nbsp;&nbsp;[bench/](sw/bench/) | Benchmarks: startup, region-of-interest hooks, the ports of CoreMark, Embench-IoT, Dhrystone, RaiderSTREAM, a pointer chase and Lua, and their expected results |
 | &nbsp;&nbsp;&nbsp;&nbsp;[deps/](sw/deps/) | External sources fetched on demand (`printf`, `riscv-tests`, `riscv-hyp-tests`, `riscv-arch-test`, Sail, Embench-IoT, CoreMark, RaiderSTREAM, Lua, are-we-fast-yet) and their patches |
 | &nbsp;&nbsp;&nbsp;&nbsp;[include/](sw/include/) | Headers of the support library and inline CSR helpers |
-| &nbsp;&nbsp;&nbsp;&nbsp;[lib/](sw/lib/) | Support library sources: startup code, console driver |
+| &nbsp;&nbsp;&nbsp;&nbsp;[lib/](sw/lib/) | Support library sources: startup code, console driver, CLIC helpers |
 | &nbsp;&nbsp;&nbsp;&nbsp;[link/](sw/link/) | Linker script: memory regions and peripheral base addresses |
 | &nbsp;&nbsp;&nbsp;&nbsp;[tests/](sw/tests/) | Test programs, one binary per `.c`/`.S` file |
 | [util/](util/) | Boot ROM generator, ACT generation, regression runners for the tests in `sw/`, `riscv-tests` and the ACTs, spike log comparison, binary trace reader and Perfetto export, benchmark runner, plots, comparison and sweeps |
@@ -82,7 +82,7 @@ make verilator-build CVA6_CONFIG=cv64a6_imafdc_sv39_hpdcache_wb
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `CVA6_CONFIG` | `cv64a6_imafdch_sv39_hpdcache_wb` | CVA6 configuration target passed to Bender; a 64-bit one with an AXI memory subsystem |
+| `CVA6_CONFIG` | `cv64a6_imafdch_sv39_hpdcache_wb` | CVA6 configuration target passed to Bender; a 64-bit one with an AXI memory subsystem. The CLIC tests need a configuration with CLIC, `cv64a6_imafdchsclic_sv39_hpdcache_wb` |
 | `CVA6_CONFIG_PKG` | empty | A configuration package to build instead of `CVA6_CONFIG`'s own, such as a variant with other parameters, without editing `config/target` |
 | `HEXFILE` | `sw/out/hello.hex` | Verilog hex image to preload |
 | `MAX_CYCLES` | `10000` | Simulation timeout in core cycles |
@@ -127,6 +127,7 @@ Parameters, types and the address map live in [hw/cva6tb_pkg.sv](hw/cva6tb_pkg.s
 | Platform control registers | `0x1000_0000` | 4 KiB |
 | Simulation console | `0x1000_1000` | 4 KiB |
 | RTC timer | `0x1000_2000` | 4 KiB |
+| CLIC | `0x1004_0000` | 192 KiB |
 | SPM | `0x2000_0000` | 1 MiB |
 | DRAM (uncached alias) | `0x4000_0000` | 256 MiB |
 | DRAM | `0x8000_0000` | 256 MiB |
@@ -141,10 +142,12 @@ Parameters, types and the address map live in [hw/cva6tb_pkg.sv](hw/cva6tb_pkg.s
 - **[cva6tb_sim_console.sv](hw/cva6tb_sim_console.sv)** — byte-write character sink. Writes
   are buffered and flushed to stdout as `[CON]` lines on newline.
 - **[cva6tb_rtc_timer.sv](hw/cva6tb_rtc_timer.sv)** — RTC-driven 64-bit counter with a compare
-  register, wired to the PLIC.
+  register, wired to both the CLIC and the PLIC.
 - **[cva6tb_clk_rst_gen.sv](hw/cva6tb_clk_rst_gen.sv)** — clock and reset generation.
-- **CLINT / PLIC** — external IPs. PLIC interrupt lines 0–15 are reserved for internal
-  sources (the RTC timer); the remaining lines are exposed as SoC inputs and currently tied off.
+- **CLIC / CLINT / PLIC** — external IPs. Interrupt lines 0–17 (CLIC) and 0–15 (PLIC) are
+  reserved for internal sources (`msip`, `mtip`, RTC timer); the remaining lines are exposed
+  as SoC inputs and currently tied off. The CLIC is built only for a configuration with CLIC;
+  otherwise its register range answers with an error.
 
 The PLIC is regenerated from [hw/rv_plic.cfg.hjson](hw/rv_plic.cfg.hjson) and the CLINT from
 `clint.mk`; both run automatically as part of the build.
@@ -322,4 +325,5 @@ load the wave scripts in [vsim/waves/](vsim/waves/):
 
 ```tcl
 do ../waves/cva6.tcl
+do ../waves/clic.tcl
 ```

@@ -14,7 +14,8 @@ module cva6tb_soc
   input  logic                      rst_ni,
   input  logic                      rtc_i,
   input  logic                      boot_mode_i,
-  input  logic [NumPlicExtIrqs-1:0] plic_ext_irqs_i
+  input  logic [NumPlicExtIrqs-1:0] plic_ext_irqs_i,
+  input  logic [NumClicExtIrqs-1:0] clic_ext_irqs_i
 );
 
   logic                              clk;
@@ -28,6 +29,13 @@ module cva6tb_soc
   logic                        [1:0] xeip;
   logic                        [1:0] sw_xeip;  // raised by software, see cva6tb_regs
   logic            [NumPlicIrqs-1:0] plic_irqs;
+  logic            [NumClicIrqs-1:0] clic_irqs;
+  logic                              clic_irq_valid, clic_irq_ready;
+  logic                              clic_irq_kill_req, clic_irq_kill_ack;
+  logic                              clic_irq_shv;
+  logic                        [7:0] clic_irq_id;
+  logic                        [7:0] clic_irq_level;
+  logic                        [1:0] clic_irq_priv;
 
   axi_mst_req_t                      axi_core_req;
   axi_mst_rsp_t                      axi_core_rsp;
@@ -60,6 +68,8 @@ module cva6tb_soc
   reg_rsp_t                          reg_clint_rsp;
   reg_req_t                          reg_plic_req;
   reg_rsp_t                          reg_plic_rsp;
+  reg_req_t                          reg_clic_req;
+  reg_rsp_t                          reg_clic_rsp;
   reg_req_t                          reg_bootrom_req;
   reg_rsp_t                          reg_bootrom_rsp;
   reg_req_t                          reg_rtc_timer_req;
@@ -123,6 +133,26 @@ module cva6tb_soc
   assign plic_irqs[15] = 1'b0;
   assign plic_irqs[NumPlicIrqs-1:NumPlicIntIrqs] = plic_ext_irqs_i;
 
+  assign clic_irqs[ 0] = 1'b0;
+  assign clic_irqs[ 1] = 1'b0;
+  assign clic_irqs[ 2] = 1'b0;
+  assign clic_irqs[ 3] = msip;
+  assign clic_irqs[ 4] = 1'b0;
+  assign clic_irqs[ 5] = 1'b0;
+  assign clic_irqs[ 6] = 1'b0;
+  assign clic_irqs[ 7] = mtip;
+  assign clic_irqs[ 8] = 1'b0;
+  assign clic_irqs[ 9] = 1'b0;
+  assign clic_irqs[10] = 1'b0;
+  assign clic_irqs[11] = 1'b0;
+  assign clic_irqs[12] = 1'b0;
+  assign clic_irqs[13] = 1'b0;
+  assign clic_irqs[14] = 1'b0;
+  assign clic_irqs[15] = 1'b0;
+  assign clic_irqs[16] = 1'b0;
+  assign clic_irqs[17] = rtc_timer_irq;
+  assign clic_irqs[NumClicIrqs-1:NumClicIntIrqs] = clic_ext_irqs_i;
+
   assign default_reg_idx = (RegbusErrId);
 
   assign axi_mst_reqs[0] = axi_core_req;
@@ -161,6 +191,9 @@ module cva6tb_soc
   assign reg_rtc_timer_req = reg_out_reqs[RegbusRTCTimerId];
   assign reg_out_rsps[RegbusRTCTimerId] = reg_rtc_timer_rsp;
 
+  assign reg_clic_req = reg_out_reqs[RegbusClicId];
+  assign reg_out_rsps[RegbusClicId] = reg_clic_rsp;
+
   cva6_top #(
     .CVA6Cfg       ( CVA6Cfg                  ),
     .rvfi_probes_t ( rvfi_probes_t            ),
@@ -176,14 +209,14 @@ module cva6tb_soc
     .ipi_i         ( msip                     ),
     .time_irq_i    ( mtip                     ),
     .debug_req_i   ( '0                       ),
-    .clic_irq_valid_i ( 1'b0                   ),
-    .clic_irq_id_i    ( '0                     ),
-    .clic_irq_level_i ( '0                     ),
-    .clic_irq_priv_i  ( riscv::PRIV_LVL_M      ),
-    .clic_irq_shv_i   ( 1'b0                   ),
-    .clic_irq_ready_o ( /* Not connected */    ),
-    .clic_kill_req_i  ( 1'b0                   ),
-    .clic_kill_ack_o  ( /* Not connected */    ),
+    .clic_irq_valid_i ( clic_irq_valid                    ),
+    .clic_irq_id_i    ( clic_irq_id                       ),
+    .clic_irq_level_i ( clic_irq_level                    ),
+    .clic_irq_priv_i  ( riscv::priv_lvl_t'(clic_irq_priv) ),
+    .clic_irq_shv_i   ( clic_irq_shv                      ),
+    .clic_irq_ready_o ( clic_irq_ready                    ),
+    .clic_kill_req_i  ( clic_irq_kill_req                 ),
+    .clic_kill_ack_o  ( clic_irq_kill_ack                 ),
     .rvfi_probes_o ( rvfi_probes              ),
     .perf_probes_o ( perf_probes              ),
     .cvxif_req_o   ( /* Not connected */      ),
@@ -294,6 +327,44 @@ module cva6tb_soc
     .irq_id_o   (              ),
     .msip_o     (              )
   );
+
+  // CLIC interrupt controller, built when the core implements the CLIC. Its
+  // register range answers with an error otherwise.
+  if (CVA6Cfg.RVSCLIC) begin : gen_clic
+    clic #(
+      .N_SOURCE       ( NumClicIrqs       ),
+      .INTCTLBITS     ( 8                 ),
+      .reg_req_t      ( reg_req_t         ),
+      .reg_rsp_t      ( reg_rsp_t         ),
+      .SSCLIC         ( 1                 ),
+      .USCLIC         ( 0                 ),
+      .VSCLIC         ( 0                 )
+    ) i_clic (
+      .clk_i          ( clk               ),
+      .rst_ni         ( rst_n             ),
+      .reg_req_i      ( reg_clic_req      ),
+      .reg_rsp_o      ( reg_clic_rsp      ),
+      .intr_src_i     ( clic_irqs         ),
+      .irq_valid_o    ( clic_irq_valid    ),
+      .irq_ready_i    ( clic_irq_ready    ),
+      .irq_id_o       ( clic_irq_id       ),
+      .irq_level_o    ( clic_irq_level    ),
+      .irq_shv_o      ( clic_irq_shv      ),
+      .irq_priv_o     ( clic_irq_priv     ),
+      .irq_v_o        (                   ),
+      .irq_vsid_o     (                   ),
+      .irq_kill_req_o ( clic_irq_kill_req ),
+      .irq_kill_ack_i ( clic_irq_kill_ack )
+    );
+  end else begin : gen_no_clic
+    assign clic_irq_valid    = 1'b0;
+    assign clic_irq_id       = '0;
+    assign clic_irq_level    = '0;
+    assign clic_irq_shv      = 1'b0;
+    assign clic_irq_priv     = riscv::PRIV_LVL_M;
+    assign clic_irq_kill_req = 1'b0;
+    assign reg_clic_rsp      = '{rdata: '0, error: 1'b1, ready: 1'b1};
+  end
 
   // AXI interconnect
   axi_xbar #(

@@ -55,6 +55,7 @@ SECTIONS {
   __base_plic     = 0x0c000000;
   __base_regs     = 0x10000000;
   __base_console  = 0x10001000;
+  __base_clic     = 0x10040000;
   __base_spm      = ORIGIN(spm);
   __base_uncached = 0x40000000;
   __base_dspm     = 0x01800000;

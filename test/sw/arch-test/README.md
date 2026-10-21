@@ -100,7 +100,7 @@ Every configuration declares all six standard interrupts, and the macros raise e
 The external lines are levels the macros raise and lower directly, like the interrupt generator
 ACT gives Sail, and the supervisor one is distinct from the software-writable `mip.SEIP`, as the
 tests require. `mtime` counts the testbench's 1 MHz RTC, a tick every 1000 core cycles, so the
-macros arm a timer interrupt "soon" 10 ticks ahead. The CLIC configuration runs the tests in the
+macros arm a timer interrupt "soon" 10 ticks ahead. The CLIC configurations run the tests in the
 standard interrupt mode (`mtvec` modes 0 and 1), in which the core takes interrupts through `mip`
 as without CLIC.
 
@@ -110,15 +110,18 @@ as without CLIC.
 | --- | --- | --- |
 | `cv64a6_imafdch_sv39_hpdcache_wb` | HPDcache, write-back | H, Zicbom |
 | `cv64a6_imafdchsclic_sv39_hpdcache_wb` | HPDcache, write-back | H, CLIC, Zicbom |
+| `cv64a6_imafdchxhclic_sv39_hpdcache_wb` | HPDcache, write-back | as above, with the virtual CLIC |
 | `cv64a6_imafdc_sv39_hpdcache_wb` | HPDcache, write-back | B, Zkn, Zicbom, superscalar issue |
 | `cv64a6_splus` | HPDcache, write-back | as above; CV-X-IF off |
 
 Configurations no probe can tell apart share one description through links to its
 `config.yaml` and `sail.json`, so that they get byte-identical tests: `cv64a6_splus` uses
 `cv64a6_imafdc_sv39_hpdcache_wb`'s, which differs from it only in CV-X-IF.
+`cv64a6_imafdchxhclic_sv39_hpdcache_wb` uses `cv64a6_imafdchsclic_sv39_hpdcache_wb`'s: the virtual
+CLIC is not visible in any standard CSR.
 
-The CLIC configuration implements the CLIC `mtvec` mode, which UDB cannot express, so the two
-tests that check `mtvec`'s reserved mode bit are waived for it.
+The CLIC configurations implement the CLIC `mtvec` mode, which UDB cannot express, so the two
+tests that check `mtvec`'s reserved mode bit are waived for them.
 
 ## Waivers
 

@@ -36,6 +36,8 @@ module cva6tb_soc
   logic                        [7:0] clic_irq_id;
   logic                        [7:0] clic_irq_level;
   logic                        [1:0] clic_irq_priv;
+  logic                              clic_irq_v;
+  logic                        [5:0] clic_irq_vsid;
 
   axi_mst_req_t                      axi_core_req;
   axi_mst_rsp_t                      axi_core_rsp;
@@ -213,8 +215,8 @@ module cva6tb_soc
     .clic_irq_id_i    ( clic_irq_id                       ),
     .clic_irq_level_i ( clic_irq_level                    ),
     .clic_irq_priv_i  ( riscv::priv_lvl_t'(clic_irq_priv) ),
-    .clic_irq_v_i     ( 1'b0                            ),
-    .clic_irq_vsid_i  ( '0                              ),
+    .clic_irq_v_i     ( clic_irq_v                        ),
+    .clic_irq_vsid_i  ( clic_irq_vsid                     ),
     .clic_irq_shv_i   ( clic_irq_shv                      ),
     .clic_irq_ready_o ( clic_irq_ready                    ),
     .clic_kill_req_i  ( clic_irq_kill_req                 ),
@@ -330,17 +332,21 @@ module cva6tb_soc
     .msip_o     (              )
   );
 
-  // CLIC interrupt controller, built when the core implements the CLIC. Its
+  // CLIC interrupt controller, built when the core implements the CLIC, with
+  // its virtual supervisor extension when the core implements the vCLIC. Its
   // register range answers with an error otherwise.
   if (CVA6Cfg.RVSCLIC) begin : gen_clic
     clic #(
-      .N_SOURCE       ( NumClicIrqs       ),
-      .INTCTLBITS     ( 8                 ),
-      .reg_req_t      ( reg_req_t         ),
-      .reg_rsp_t      ( reg_rsp_t         ),
-      .SSCLIC         ( 1                 ),
-      .USCLIC         ( 0                 ),
-      .VSCLIC         ( 0                 )
+      .N_SOURCE       ( NumClicIrqs                    ),
+      .INTCTLBITS     ( 8                              ),
+      .reg_req_t      ( reg_req_t                      ),
+      .reg_rsp_t      ( reg_rsp_t                      ),
+      .SSCLIC         ( 1                              ),
+      .USCLIC         ( 0                              ),
+      .VSCLIC         ( CVA6Cfg.RVXHCLIC               ),
+      .N_VSCTXTS      ( CVA6Cfg.RVXHCLIC ? 4 : 0       ),
+      .VSPRIO         ( CVA6Cfg.RVXHCLIC               ),
+      .VSPRIO_W       ( 1                              )
     ) i_clic (
       .clk_i          ( clk               ),
       .rst_ni         ( rst_n             ),
@@ -353,8 +359,8 @@ module cva6tb_soc
       .irq_level_o    ( clic_irq_level    ),
       .irq_shv_o      ( clic_irq_shv      ),
       .irq_priv_o     ( clic_irq_priv     ),
-      .irq_v_o        (                   ),
-      .irq_vsid_o     (                   ),
+      .irq_v_o        ( clic_irq_v        ),
+      .irq_vsid_o     ( clic_irq_vsid     ),
       .irq_kill_req_o ( clic_irq_kill_req ),
       .irq_kill_ack_i ( clic_irq_kill_ack )
     );
@@ -364,6 +370,8 @@ module cva6tb_soc
     assign clic_irq_level    = '0;
     assign clic_irq_shv      = 1'b0;
     assign clic_irq_priv     = riscv::PRIV_LVL_M;
+    assign clic_irq_v        = 1'b0;
+    assign clic_irq_vsid     = '0;
     assign clic_irq_kill_req = 1'b0;
     assign reg_clic_rsp      = '{rdata: '0, error: 1'b1, ready: 1'b1};
   end

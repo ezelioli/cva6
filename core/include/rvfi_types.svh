@@ -112,6 +112,8 @@
   rvfi_csr_elmt_t mintthresh; \
   rvfi_csr_elmt_t stvt; \
   rvfi_csr_elmt_t sintthresh; \
+  rvfi_csr_elmt_t vstvt; \
+  rvfi_csr_elmt_t vsintthresh; \
 }
 
 // RVFI PROBES
@@ -212,6 +214,8 @@
   logic [Cfg.XLEN-1:0] mintthresh_q; \
   logic [Cfg.XLEN-1:0] stvt_q; \
   logic [Cfg.XLEN-1:0] sintthresh_q; \
+  logic [Cfg.XLEN-1:0] vstvt_q; \
+  logic [Cfg.XLEN-1:0] vsintthresh_q; \
 }
 
 `define RVFI_TO_ITI_T(Cfg) struct packed { \

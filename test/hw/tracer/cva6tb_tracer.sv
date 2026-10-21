@@ -256,6 +256,8 @@ module cva6tb_tracer #(
     `CVA6TB_TRACER_CSR(12'h347, mintthresh)
     `CVA6TB_TRACER_CSR(12'h107, stvt)
     `CVA6TB_TRACER_CSR(12'h147, sintthresh)
+    `CVA6TB_TRACER_CSR(12'h207, vstvt)
+    `CVA6TB_TRACER_CSR(12'h247, vsintthresh)
     csrs_sent = 1'b1;
   endtask
 

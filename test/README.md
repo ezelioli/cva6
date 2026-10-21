@@ -82,7 +82,7 @@ make verilator-build CVA6_CONFIG=cv64a6_imafdc_sv39_hpdcache_wb
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `CVA6_CONFIG` | `cv64a6_imafdch_sv39_hpdcache_wb` | CVA6 configuration target passed to Bender; a 64-bit one with an AXI memory subsystem. The CLIC tests need a configuration with CLIC, `cv64a6_imafdchsclic_sv39_hpdcache_wb` |
+| `CVA6_CONFIG` | `cv64a6_imafdch_sv39_hpdcache_wb` | CVA6 configuration target passed to Bender; a 64-bit one with an AXI memory subsystem. The CLIC tests need a configuration with CLIC, `cv64a6_imafdchsclic_sv39_hpdcache_wb`, and `clic_vsmode` one with the virtual CLIC, `cv64a6_imafdchxhclic_sv39_hpdcache_wb` |
 | `CVA6_CONFIG_PKG` | empty | A configuration package to build instead of `CVA6_CONFIG`'s own, such as a variant with other parameters, without editing `config/target` |
 | `HEXFILE` | `sw/out/hello.hex` | Verilog hex image to preload |
 | `MAX_CYCLES` | `10000` | Simulation timeout in core cycles |

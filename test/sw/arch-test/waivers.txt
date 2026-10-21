@@ -7,5 +7,5 @@
 # its cause.
 
 PMPSm_cfg_A_tor_zero-00  *  Stores, loads and executes at address 0, where the testbench maps its AXI error slave. ACT assumes memory there regardless of the declared memory map, and Sail treats undeclared address 0 as memory. The probe cannot catch a PMP bug: entry 0 and the background entry are both locked RWX, so it only checks that memory exists at 0.
-Sm_mcsr_access-00  cv64a6_imafdchsclic_sv39_hpdcache_wb  The core implements the CLIC mtvec mode (mtvec[1:0] = 3), which UDB cannot express, so mtvec[1] reads back set where MTVEC_MODES [0, 1] requires zero. The test stops at that check, so its later CSR checks do not run on CLIC configurations.
-Sm_mcsr_walk-01  cv64a6_imafdchsclic_sv39_hpdcache_wb  The same CLIC mtvec mode, found by the bit walk over mtvec. The test stops at that check, so its later CSR checks do not run on CLIC configurations.
+Sm_mcsr_access-00  cv64a6_imafdchsclic_sv39_hpdcache_wb,cv64a6_imafdchxhclic_sv39_hpdcache_wb  The core implements the CLIC mtvec mode (mtvec[1:0] = 3), which UDB cannot express, so mtvec[1] reads back set where MTVEC_MODES [0, 1] requires zero. The test stops at that check, so its later CSR checks do not run on CLIC configurations.
+Sm_mcsr_walk-01  cv64a6_imafdchsclic_sv39_hpdcache_wb,cv64a6_imafdchxhclic_sv39_hpdcache_wb  The same CLIC mtvec mode, found by the bit walk over mtvec. The test stops at that check, so its later CSR checks do not run on CLIC configurations.

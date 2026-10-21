@@ -3648,7 +3648,9 @@ CVA6Cfg.NrCommitPorts
   assign rvfi_csr_o.vstvec_q = CVA6Cfg.RVH ? vstvec_q : '0;
   assign rvfi_csr_o.vsscratch_q = CVA6Cfg.RVH ? vsscratch_q : '0;
   assign rvfi_csr_o.vsepc_q = CVA6Cfg.RVH ? vsepc_q : '0;
-  assign rvfi_csr_o.vscause_q = CVA6Cfg.RVH ? vscause_q : '0;
+  assign rvfi_csr_o.vscause_q = !CVA6Cfg.RVH ? '0 : (CVA6Cfg.RVXHCLIC && clic_mode_o) ?
+      {vscause_q[CVA6Cfg.XLEN-1:30], 1'b0, vsstatus_q.spp, vsstatus_q.spie, vscause_q[26:0]} :
+      vscause_q;
   assign rvfi_csr_o.vstval_q = CVA6Cfg.RVH ? vstval_q : '0;
   assign rvfi_csr_o.vsatp_q = CVA6Cfg.RVH ? CVA6Cfg.XLEN'(vsatp_q) : '0;
   assign rvfi_csr_o.mtvt_q = CVA6Cfg.RVSCLIC ? mtvt_q : '0;
@@ -3657,6 +3659,8 @@ CVA6Cfg.NrCommitPorts
   assign rvfi_csr_o.stvt_q = (CVA6Cfg.RVS && CVA6Cfg.RVSCLIC && clic_mode_o) ? stvt_q : '0;
   assign rvfi_csr_o.sintthresh_q = (CVA6Cfg.RVS && CVA6Cfg.RVSCLIC && clic_mode_o) ?
       CVA6Cfg.XLEN'(sintthresh_q) : '0;
+  assign rvfi_csr_o.vstvt_q = (CVA6Cfg.RVXHCLIC && clic_mode_o) ? vstvt_q : '0;
+  assign rvfi_csr_o.vsintthresh_q = (CVA6Cfg.RVXHCLIC && clic_mode_o) ? CVA6Cfg.XLEN'(vsintthresh_q) : '0;
 
 
 endmodule

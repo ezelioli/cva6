@@ -13,6 +13,14 @@ add wave -group CVA6 ${CVA6}/irq_i
 add wave -group CVA6 ${CVA6}/ipi_i
 add wave -group CVA6 ${CVA6}/time_irq_i
 add wave -group CVA6 ${CVA6}/debug_req_i
+add wave -group CVA6 ${CVA6}/clic_irq_valid_i
+add wave -group CVA6 ${CVA6}/clic_irq_id_i
+add wave -group CVA6 ${CVA6}/clic_irq_level_i
+add wave -group CVA6 ${CVA6}/clic_irq_priv_i
+add wave -group CVA6 ${CVA6}/clic_irq_shv_i
+add wave -group CVA6 ${CVA6}/clic_irq_ready_o
+add wave -group CVA6 ${CVA6}/clic_kill_req_i
+add wave -group CVA6 ${CVA6}/clic_kill_ack_o
 add wave -group CVA6 ${CVA6}/noc_req_o
 add wave -group CVA6 ${CVA6}/noc_resp_i
 

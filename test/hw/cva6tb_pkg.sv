@@ -53,8 +53,8 @@ package cva6tb_pkg;
   localparam int unsigned AxiSlvIdDram     = 2;
   localparam int unsigned AxiSlvIdSpm      = 3;
 
-  localparam int unsigned RegbusOutNum     = 7;
-  localparam int unsigned RegbusRulesNum   = 7;
+  localparam int unsigned RegbusOutNum     = 8;
+  localparam int unsigned RegbusRulesNum   = 8;
   localparam int unsigned RegbusErrId      = 0;
   localparam int unsigned RegbusBootromId  = 1;
   localparam int unsigned RegbusClintId    = 2;
@@ -62,6 +62,11 @@ package cva6tb_pkg;
   localparam int unsigned RegbusPCRsId     = 4;
   localparam int unsigned RegbusConsoleId  = 5;
   localparam int unsigned RegbusRTCTimerId = 6;
+  localparam int unsigned RegbusClicId     = 7;
+
+  localparam int unsigned NumClicIntIrqs   = 18;
+  localparam int unsigned NumClicExtIrqs   = 256 - NumClicIntIrqs;
+  localparam int unsigned NumClicIrqs      = NumClicIntIrqs + NumClicExtIrqs;
 
   localparam int unsigned NumPlicIntIrqs   = 16;
   localparam int unsigned NumPlicExtIrqs   = 32 - NumPlicIntIrqs;
@@ -174,6 +179,9 @@ package cva6tb_pkg;
   // RTC timer region
   localparam reg_addr_t RTCTimerBaseAddr = 32'h1000_2000;
   localparam reg_addr_t RTCTimerSize     = 32'h0000_1000;
+  // CLIC region
+  localparam reg_addr_t ClicBaseAddr     = 32'h1004_0000;
+  localparam reg_addr_t ClicSize         = 32'h0003_0000;
 
   localparam addr_rule_t [AxiXbarAddrRules-1:0] AxiMap = {
     addr_rule_t'{ idx: AxiSlvIdErrSlv, start_addr: AxiErrBaseAddr,       end_addr: (AxiErrBaseAddr + AxiErrSize)             }, // AXI error slave
@@ -190,7 +198,8 @@ package cva6tb_pkg;
     reg_addr_rule_t'{ idx: RegbusPlicId,     start_addr:     PlicBaseAddr, end_addr: (PlicBaseAddr + PlicSize)         }, // PLIC
     reg_addr_rule_t'{ idx: RegbusPCRsId,     start_addr:     PCRsBaseAddr, end_addr: (PCRsBaseAddr + PCRsSize)         }, // Platform Control Registers
     reg_addr_rule_t'{ idx: RegbusConsoleId,  start_addr:  ConsoleBaseAddr, end_addr: (ConsoleBaseAddr + ConsoleSize)   }, // Sim console
-    reg_addr_rule_t'{ idx: RegbusRTCTimerId, start_addr: RTCTimerBaseAddr, end_addr: (RTCTimerBaseAddr + RTCTimerSize) }  // RTC timer
+    reg_addr_rule_t'{ idx: RegbusRTCTimerId, start_addr: RTCTimerBaseAddr, end_addr: (RTCTimerBaseAddr + RTCTimerSize) }, // RTC timer
+    reg_addr_rule_t'{ idx: RegbusClicId,     start_addr:     ClicBaseAddr, end_addr: (ClicBaseAddr + ClicSize)         }  // CLIC
   };
 
   //////////////////////

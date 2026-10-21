@@ -67,7 +67,8 @@ module test;
     .rst_ni          ( rst_n     ),
     .rtc_i           ( rtc       ),
     .boot_mode_i     ( bootmode  ),
-    .plic_ext_irqs_i ( '0        )
+    .plic_ext_irqs_i ( '0        ),
+    .clic_ext_irqs_i ( '0        )
   );
 
   task automatic preload_hex();

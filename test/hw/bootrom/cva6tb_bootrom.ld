@@ -50,6 +50,7 @@ SECTIONS {
   /* Relevant addresses */
   __base_regs    = 0x10000000;
   __base_console = 0x10001000;
+  __base_clic    = 0x10040000;
   __base_clint   = 0x02040000;
   __base_plic    = 0x0c000000;
   __base_dram    = ORIGIN(dram);

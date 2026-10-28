@@ -55,15 +55,6 @@ make verilator-run   TRACER=1 HEXFILE=sw/out/hello.hex
 The trace lands in `verilator/cva6tb_trace_hart_0.trace`. QuestaSim works the same way
 (`make vsim-build TRACER=1`), with the DPI backend compiled by `vlog`.
 
-RV32 configurations work too, with the test software rebuilt for the narrower width:
-
-```sh
-make verilator-build CVA6_CONFIG=cv32a6_imac_sv32 TRACER=1
-make -C sw clean && make -C sw $PWD/sw/out/hello.hex \
-  SW_FLAGS="-DOT_PLATFORM_RV32 -march=rv32imac_zicsr_zifencei -mabi=ilp32 -mstrict-align -O2 \
-            -Wall -Wextra -static -ffunction-sections -ffreestanding -fdata-sections"
-```
-
 Runtime behaviour is controlled with plusargs. With make, the everyday ones are variables named
 after them, and `SIM_ARGS` passes any plusarg; it comes first on the command line, so it takes
 priority:
@@ -550,9 +541,9 @@ keeping a trace, point the trace at `/dev/null` and only the summary survives.
 | Zkn (`aes*`, `sha*`, `pack*`, `brev8`, `zip`, `xperm*`) | no |
 | V (vector) | no |
 
-Zkn is enabled in `cv32a6_imac_sv32` and the `cv64a6_imafdc_sv39*` configurations; until the
-decoder learns it, its instructions print as `INVALID`, apart from `clmul` and `clmulh`, which
-share Zbc's encodings. Vector needs `vtype`/`vl` tracking to render sensibly.
+Zkn is enabled in `cv64a6_splus` and `cv64a6_splusplus`; until the decoder learns it, its
+instructions print as `INVALID`, apart from `clmul` and `clmulh`, which share Zbc's encodings.
+Vector needs `vtype`/`vl` tracking to render sensibly.
 
 Unknown encodings print as `INVALID` with the raw word still in the encoding column, so nothing
 is silently dropped.

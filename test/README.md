@@ -79,7 +79,7 @@ explicitly before rebuilding:
 
 ```sh
 make verilator-clean
-make verilator-build CVA6_CONFIG=cv64a6_imafdc_sv39_hpdcache_wb
+make verilator-build CVA6_CONFIG=cv64a6_splus
 ```
 
 (`make vsim-clean` for QuestaSim.)

@@ -1,6 +1,4 @@
 # ACT4 DUT configuration for cv64a6_splus on the cva6tb testbench.
-# Same core description as cv64a6_imafdc_sv39_hpdcache_wb: config.yaml and
-# sail.json are links to it.
 # SPDX-License-Identifier: Apache-2.0
 name: cv64a6_splus
 compiler_exe: riscv64-unknown-elf-gcc

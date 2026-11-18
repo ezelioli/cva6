@@ -3,9 +3,9 @@
   "config": "cv64a6_imafdch_sv39_hpdcache_wb",
   "sim_args": "",
   "measured": {
-    "date": "2026-10-21T14:56:45+00:00",
+    "date": "2026-11-18T20:05:33+00:00",
     "rtl": {
-      "commit": "2d7b2844fdccdc0b23d95434b268e92a3cd24ed0",
+      "commit": "c21bde943f6984d80cd352bd2607a3ac13cb2da3",
       "branch": "HEAD",
       "dirty": false
     },
@@ -19,7 +19,7 @@
       "chase loads:   16384",
       "lua:           312b9efaa1061c2c4cad08554dbc1351c3270eef",
       "awfy:          74306fec151070fd07157cefeacf19e7e0bcdc89, iterations: bounce=1 deltablue=1 list=1 queens=1 sieve=1",
-      "bench sources: a0fb114929fc2b4a8270ee1dba40256de4728b26"
+      "bench sources: ee789ed34030f3b658bbcf93469647786fc7c70a"
     ]
   },
   "benchmarks": {
@@ -132,23 +132,23 @@
       "instret": 882836
     },
     "lua-bounce": {
-      "cycles": 10570880,
+      "cycles": 10574318,
       "instret": 7739164
     },
     "lua-deltablue": {
-      "cycles": 3105849,
+      "cycles": 3100940,
       "instret": 1820629
     },
     "lua-list": {
-      "cycles": 7841544,
+      "cycles": 7841977,
       "instret": 5773552
     },
     "lua-queens": {
-      "cycles": 9791052,
+      "cycles": 9791054,
       "instret": 6864781
     },
     "lua-sieve": {
-      "cycles": 5014088,
+      "cycles": 5015683,
       "instret": 3231396
     },
     "rs-central": {

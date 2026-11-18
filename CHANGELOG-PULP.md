@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased (pulp-v4)
+### Added
+- CLIC and vCLIC, with configurations `cv64a6_imafdchsclic_sv39_hpdcache_wb` and
+  `cv64a6_imafdchxhclic_sv39_hpdcache_wb`
+- Configurations `cv64a6_splus` and `cv64a6_splusplus`
+- Testbench: Spike co-simulation and generated stimulus; benchmarks (CoreMark, Embench-IoT,
+  RaiderSTREAM, Dhrystone, pointer chase, Lua) with expected cycles, sweeps and issue-slot accounting
+  from the core's performance probes
+- CI: benchmark check for pull requests, co-simulation in the GitLab pipeline
+
 ### Changed
 - Rebase onto openhwfoundation:cva6:main#d808c36e7 (2026-11-17): `cva6_top` and a pipeline
   separate from the memory subsystem, the HPDcache as data and instruction cache, configurations under
@@ -14,6 +23,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - HPDcache from pulp-platform/cv-hpdcache `ez/bufferable`: the pinned HPDcache with the change the main
   flow applies to it as a patch
 - Testbench: target `cv64a6_imafdch_sv39_hpdcache_wb`, instantiates `cva6_top`
+- PMP NAPOT masks decoded when pmpaddr is written
+- Frontend: a redirect's target is fetched from the registered next PC
+- I$: a killed fetch is aborted, and fetching goes on while a killed fetch's refill is outstanding
+- Stores complete on their grant with the HPDcache
 
 ### Removed
 - The legacy write-through and write-back caches and the work built on them: self-invalidation coherence,
@@ -21,8 +34,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - fence.t
 - RVV `acc_mmu` interface (absent on main)
 
-### Known issues
-- Not yet ported: CLIC, vCLIC, `cv64a6_splus`
+### Fixed
+- CSR: guest address on interrupts, pmpaddr NAPOT readback, U/VU-mode counter enables, stvec/vstvec
+  alignment, per-register FIOM, flush after writing interrupt-related CSRs
+- Interrupt priority across privilege modes; CLIC kill acknowledge
+- MMU: PTW access-fault type, TLB hit assertion, TLB miss counter
+- LSU: LR fault types, CBO permissions, AMO buffer overflow, full address in the non-idempotent load
+  check, store response after a store done on its grant
+- Frontend: fetch fault attributed to its own request
+- Issue and execute: scalar crypto instruction bits from the port that issues to the unit, branch unit
+  exception timing field
+- Caches: undefined-data assertions, AMO response formatting
+- RVFI: RV64 interrupt bit, VS-mode ecall, CSR zero-extension, sie/sip under H, CSR views in CLIC mode
 
 ## pulp-v3.0.0 - 2026-10-14
 ### Added

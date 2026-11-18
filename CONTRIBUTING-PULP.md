@@ -1,11 +1,19 @@
 # Contributing to the PULP branch
 
-> :warning: When opening a PR, **make sure that `pulp-platform:pulp-vx` is selected as base**, not upstream master.
+> :warning: When opening a PR, **make sure that `pulp-platform:pulp-vx` is selected as base**, not upstream main.
 
 ## General
 
-Wherever possible, follow the upstream [Contribution Guidelines](https://github.com/openhwfoundation/cva6/blob/master/CONTRIBUTING.md).
+Wherever possible, follow the upstream [Contribution Guidelines](https://github.com/openhwfoundation/cva6/blob/main/CONTRIBUTING.md).
 The default goal for all contributions on the PULP branch is that they can be upstreamed eventually.
+
+
+## Configurations
+
+The PULP configurations live under `config/target/` like upstream's targets, each with its
+configuration package and its Bender target only: the PULP flows (Bender, the testbench in `test/`,
+the CI) read nothing else. Their test data stays with the testbench: arch-test descriptions, expected
+benchmark results and co-simulation settings under `test/`.
 
 
 ## Systemlevel modifications

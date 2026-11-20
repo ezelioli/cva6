@@ -66,7 +66,9 @@ module cva6_hpicache_wrapper
     output logic icache_miss_o,
 
     // Fetch request/response - FRONTEND
-    input  ypb_fetch_req_t ypb_fetch_req_i,
+    input ypb_fetch_req_t ypb_fetch_req_i,
+    //    fetches killed while their responses are outstanding, by request ID
+    input logic [CVA6Cfg.NrFetchBufEntries-1:0] fetch_killed_i,
     output ypb_fetch_rsp_t ypb_fetch_rsp_o,
 
     input  logic              icache_mem_req_read_ready_i,
@@ -151,12 +153,13 @@ module cva6_hpicache_wrapper
 
       .wbuf_flush_i(1'b0),
 
-      .core_req_valid_i(icache_req_valid),
-      .core_req_ready_o(icache_req_ready),
-      .core_req_i      (icache_req),
-      .core_req_abort_i(icache_req_abort),
-      .core_req_tag_i  (icache_req_tag),
-      .core_req_pma_i  (icache_req_pma),
+      .core_req_valid_i (icache_req_valid),
+      .core_req_ready_o (icache_req_ready),
+      .core_req_i       (icache_req),
+      .core_req_abort_i (icache_req_abort),
+      .core_req_killed_i('{(2 ** HPDcacheCfg.u.reqTransIdWidth)'(fetch_killed_i)}),
+      .core_req_tag_i   (icache_req_tag),
+      .core_req_pma_i   (icache_req_pma),
 
       .core_rsp_valid_o(icache_rsp_valid),
       .core_rsp_o      (icache_rsp),

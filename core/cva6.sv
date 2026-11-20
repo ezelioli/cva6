@@ -125,6 +125,7 @@ module cva6
 
   ypb_fetch_req_t ypb_fetch_req;
   ypb_fetch_rsp_t ypb_fetch_rsp;
+  logic [CVA6Cfg.NrFetchBufEntries-1:0] fetch_killed;
 
   ypb_store_req_t ypb_store_req;
   ypb_store_rsp_t ypb_store_rsp;
@@ -277,6 +278,7 @@ module cva6
 
       .ypb_fetch_req_o(ypb_fetch_req),
       .ypb_fetch_rsp_i(ypb_fetch_rsp),
+      .fetch_killed_o (fetch_killed),
 
       // FROM/TO DCACHE SUBSYSTEM
 
@@ -413,6 +415,7 @@ module cva6
 
         .ypb_fetch_req_i(ypb_fetch_req),
         .ypb_fetch_rsp_o(ypb_fetch_rsp),
+        .fetch_killed_i (fetch_killed),
 
         // FROM/TO LSU
 

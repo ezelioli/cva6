@@ -126,7 +126,9 @@ module cva6_pipeline
     // Fetch YPB request ports - FRONTEND
     output ypb_fetch_req_t ypb_fetch_req_o,
     // Fetch YPB response ports - FRONTEND
-    input  ypb_fetch_rsp_t ypb_fetch_rsp_i,
+    input ypb_fetch_rsp_t ypb_fetch_rsp_i,
+    // Fetches killed while their responses are outstanding - FRONTEND
+    output logic [CVA6Cfg.NrFetchBufEntries-1:0] fetch_killed_o,
 
     // Store YPB request ports - EX_STAGE
     output ypb_store_req_t ypb_store_req_o,
@@ -615,6 +617,7 @@ CVA6Cfg.NrCommitPorts
       .arsp_i                (fetch_arsp_ex_frontend),
       .ypb_fetch_req_o       (ypb_fetch_req_o),
       .ypb_fetch_rsp_i       (ypb_fetch_rsp_i),
+      .fetch_killed_o        (fetch_killed_o),
       .fetch_entry_o         (fetch_entry_if_id),
       .fetch_entry_valid_o   (fetch_valid_if_id),
       .fetch_entry_ready_i   (fetch_ready_id_if),

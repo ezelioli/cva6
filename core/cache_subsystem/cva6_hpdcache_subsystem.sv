@@ -70,6 +70,8 @@ module cva6_hpdcache_subsystem
     input ypb_fetch_req_t ypb_fetch_req_i,
     // Fetch Response channel - FRONTEND
     output ypb_fetch_rsp_t ypb_fetch_rsp_o,
+    // Fetches killed while their responses are outstanding - FRONTEND
+    input logic [CVA6Cfg.NrFetchBufEntries-1:0] fetch_killed_i,
     //   }}}
 
     //  D$
@@ -210,6 +212,8 @@ module cva6_hpdcache_subsystem
     userCfg.wtEn = 1'b0;
     userCfg.wbEn = 1'b0;
     userCfg.lowLatency = 1'b1;
+    //  A killed fetch's refill installs nothing and keeps its victim
+    userCfg.refillDropKilled = 1'b1;
     return userCfg;
   endfunction
 
@@ -285,6 +289,7 @@ module cva6_hpdcache_subsystem
 
       .ypb_fetch_req_i(ypb_fetch_req_i),
       .ypb_fetch_rsp_o(ypb_fetch_rsp_o),
+      .fetch_killed_i (fetch_killed_i),
 
       .icache_mem_req_read_ready_i(icache_miss_ready),
       .icache_mem_req_read_valid_o(icache_miss_valid),

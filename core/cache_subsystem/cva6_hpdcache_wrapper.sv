@@ -486,12 +486,13 @@ module cva6_hpdcache_wrapper
 
       .wbuf_flush_i(dcache_flush_i),
 
-      .core_req_valid_i(dcache_req_valid),
-      .core_req_ready_o(dcache_req_ready),
-      .core_req_i      (dcache_req),
-      .core_req_abort_i(dcache_req_abort),
-      .core_req_tag_i  (dcache_req_tag),
-      .core_req_pma_i  (dcache_req_pma),
+      .core_req_valid_i (dcache_req_valid),
+      .core_req_ready_o (dcache_req_ready),
+      .core_req_i       (dcache_req),
+      .core_req_abort_i (dcache_req_abort),
+      .core_req_killed_i('{default: '0}),
+      .core_req_tag_i   (dcache_req_tag),
+      .core_req_pma_i   (dcache_req_pma),
 
       .core_rsp_valid_o(dcache_rsp_valid),
       .core_rsp_o      (dcache_rsp),

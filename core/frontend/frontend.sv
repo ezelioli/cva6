@@ -70,6 +70,8 @@ module frontend
     output ypb_fetch_req_t ypb_fetch_req_o,
     // YPB Fetch Response channel - CACHES
     input ypb_fetch_rsp_t ypb_fetch_rsp_i,
+    // Fetches killed while their responses are outstanding, by request ID - CACHES
+    output logic [CVA6Cfg.NrFetchBufEntries-1:0] fetch_killed_o,
     // Handshake's data between fetch and decode - ID_STAGE
     output fetch_entry_t [CVA6Cfg.NrIssuePorts-1:0] fetch_entry_o,
     // Handshake's valid between fetch and decode - ID_STAGE
@@ -406,7 +408,8 @@ module frontend
   } ypb_a_state_e;
   ypb_a_state_e ypb_a_state_d, ypb_a_state_q;
 
-  assign fetch_pending = |(fetchbuf_valid_q & ~fetchbuf_flushed_q);
+  assign fetch_pending  = |(fetchbuf_valid_q & ~fetchbuf_flushed_q);
+  assign fetch_killed_o = fetchbuf_valid_q & fetchbuf_flushed_q;
 
   // A wanted fetch still outstanding after this cycle: neither answered nor
   // killed in it. With ONE_LIVE_FETCH it holds the next fetch back.
